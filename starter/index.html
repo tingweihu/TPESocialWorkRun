@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content" />
+    <meta name="theme-color" content="#253653" />
+    <meta name="description" content="《社工勇者：城市裡的光》以臺北為靈感的原創 2D 像素小遊戲，和夥伴一起跨越障礙、點亮城市。" />
+    <title>TPESocialWorkRun｜社工勇者：城市裡的光</title>
+  </head>
+  <body>
+    <main class="shell app-shell">
+      <div class="topline"><span>TPESocialWorkRun</span><span>一起，把城市點亮</span></div>
+      <div id="game" aria-label="社工勇者遊戲區"></div>
+      <p class="hint">← →／A D：移動　Space／Z：跳躍　J／X：技能　E／Enter：交談　↑↓：選項　Esc／P：暫停</p>
+      <p class="hint sound-controls"><button id="sound-toggle" type="button">聲音：開（M）</button><button id="music-toggle" type="button">音樂：開（B）</button><button id="boss-help" type="button" hidden>Boss 怎麼打？（H）</button><button id="journey-menu" type="button" hidden>關卡地圖</button></p>
+      <div class="display-controls"><button id="touch-toggle" type="button">觸控：關</button><button id="fullscreen-toggle" type="button" hidden>全螢幕</button><span id="display-status" role="status"></span></div>
+      <p class="touch-tip">雙手一起玩：左手移動，右手跳躍；按住跳得更高。橫放視野更舒服。</p>
+      <p class="city-intro">歡迎來到光之臺北。把一點勇氣放進口袋，沿著騎樓、河岸和晚風，陪夥伴走一小段路。累了就歇歇，這座城的光，也有你的一份。</p>
+      <p class="disclaimer">這是一座縮景拼接的想像臺北，非真實步行路線。人物與事件均為虛構；遊戲紀錄非專業績效評量。</p>
+    </main>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

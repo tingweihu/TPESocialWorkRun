@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "playable": [
+    {
+      "id": "family",
+      "name": "阿晴",
+      "title": "家援導航員",
+      "domain": "社福中心／脆弱家庭",
+      "color": "#FFD45B",
+      "accent": "#9C644C",
+      "intro": "先把真正重要的事找出來。",
+      "ability": {
+        "id": "scan",
+        "name": "需求雷達",
+        "cooldownSeconds": 8,
+        "durationSeconds": 4,
+        "effect": "highlight_nearest_3_items_and_npcs"
+      }
+    },
+    {
+      "id": "protect",
+      "name": "小盾",
+      "title": "安全策略師",
+      "domain": "兒少／成人保護",
+      "color": "#FF7166",
+      "accent": "#FFF4D8",
+      "intro": "安全先行，合作跟上。",
+      "ability": {
+        "id": "shield",
+        "name": "安全護盾",
+        "cooldownSeconds": 10,
+        "durationSeconds": 4,
+        "effect": "block_next_single_contact_damage"
+      }
+    },
+    {
+      "id": "outreach",
+      "name": "阿路",
+      "title": "街角連結者",
+      "domain": "街友外展",
+      "color": "#57C6D9",
+      "accent": "#F9A44C",
+      "intro": "先靠近，再理解。",
+      "ability": {
+        "id": "supply",
+        "name": "友善補給",
+        "cooldownSeconds": 9,
+        "durationSeconds": 0,
+        "effect": "spawn_one_personal_stamina_pickup"
+      }
+    },
+    {
+      "id": "mental",
+      "name": "阿星",
+      "title": "心晴導航員",
+      "domain": "社區心理衛生",
+      "color": "#AA94F7",
+      "accent": "#FFD45B",
+      "intro": "看清訊號，再一起找方向。",
+      "ability": {
+        "id": "clear",
+        "name": "迷霧澄清",
+        "cooldownSeconds": 9,
+        "durationSeconds": 5,
+        "effect": "fade_stigma_fog_and_reveal_cues"
+      }
+    }
+  ]
+}

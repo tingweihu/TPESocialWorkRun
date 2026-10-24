@@ -1,0 +1,24 @@
+{
+  "name": "tpesocialworkrun",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "check": "tsc --noEmit",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "phaser": "4.2.1"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3",
+    "vite": "8.3.4"
+  },
+  "description": "A colorful 2D Taipei adventure celebrating social workers.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}

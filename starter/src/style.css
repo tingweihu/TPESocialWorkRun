@@ -1,0 +1,174 @@
+:root {
+  font-family: "Microsoft JhengHei", "PingFang TC", "Noto Sans TC", sans-serif;
+  color: #fff4d8;
+  background: #253653;
+}
+* { box-sizing: border-box; }
+body { min-height: 100vh; margin: 0; display: flex; align-items: center; justify-content: center; background: radial-gradient(circle at 40% 15%, #475e83 0, #253653 55%, #19253d 100%); }
+.shell { width: min(95vw, 1120px); }
+.topline { display: flex; justify-content: space-between; font-weight: bold; font-size: 11px; letter-spacing: 0.14em; margin-bottom: 10px; color: #ffd45b; }
+#game { position: relative; width: 100%; aspect-ratio: 16 / 9; background: #85d6f7; border: 5px solid #fff4d8; border-radius: 12px; overflow: hidden; box-shadow: 0 18px 0 #18253b, 0 28px 48px rgba(0,0,0,.3); }
+#game canvas { display: block; image-rendering: pixelated; image-rendering: crisp-edges; }
+.hint, .disclaimer { text-align: center; margin: 18px 0 0; font-size: 13px; }
+.disclaimer { color: #aac6d8; font-size: 11px; margin-top: 5px; }
+@media (max-width: 580px) { .topline { font-size: 9px; letter-spacing: 0.05em; } .hint { font-size: 11px; line-height: 1.6; } #game { border-width: 3px; } }
+.org-overlay { position: absolute; inset: 0; z-index: 10; overflow: auto; display: grid; place-items: center; padding: clamp(8px, 3vw, 32px); background: #41366de8; }
+.org-panel { width: min(100%, 680px); padding: clamp(14px, 3vw, 32px); border: 4px solid #ffd45b; border-radius: 8px; background: #fff4d8; color: #253653; box-shadow: 8px 8px 0 #253653; }
+.org-panel h1 { font-size: clamp(19px, 2.7vw, 30px); margin: 0 0 12px; }
+.org-panel p { margin: 8px 0 18px; line-height: 1.5; }
+.org-panel label { display: block; font-weight: bold; margin-bottom: 8px; }
+.org-panel input { width: 100%; min-width: 0; border: 2px solid #253653; border-radius: 4px; padding: 12px; font: inherit; font-size: 18px; color: #253653; background: white; }
+.org-panel .org-count, .org-panel .org-help { font-size: 13px; margin: 8px 0; }
+.org-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+.org-actions button { border: 2px solid #253653; border-radius: 4px; background: #ffd45b; color: #253653; font: inherit; font-weight: bold; padding: 10px 14px; cursor: pointer; }
+.org-actions .secondary { background: #fff4d8; }
+.org-actions button:hover { background: #73d6aa; }
+.org-panel :focus-visible { outline: 3px solid #a05cdb; outline-offset: 3px; }
+.result-overlay { position:absolute; inset:0; z-index:12; overflow:auto; padding:clamp(8px,2vw,22px); background:#41366de8; color:#253653; }
+.result-panel { max-width:1000px; margin:auto; background:#fff4d8; border:4px solid #ffd45b; padding:clamp(12px,2vw,24px); }
+.result-panel h1 { margin:0; font-size:clamp(24px,3vw,36px); color:#41366d; }
+.result-panel h2 { font-size:clamp(18px,2vw,25px); overflow-wrap:anywhere; margin:8px 0; }
+.result-panel p { line-height:1.6; margin:8px 0; }
+.result-grid { display:grid; grid-template-columns: 1fr minmax(160px,30%); gap:24px; align-items:start; }
+.result-stats, .result-panel blockquote, .result-panel details p { white-space:pre-line; }
+.result-panel blockquote { border-left:4px solid #73d6aa; margin:12px 0; padding-left:12px; line-height:1.6; }
+.scorecard-preview { display:block; width:100%; height:auto; border:2px solid #253653; }
+.scorecard-preview[hidden] { display:none; }
+.result-actions { display:flex; flex-wrap:wrap; gap:8px; margin:14px 0; }
+.result-actions button, #sound-toggle { font:inherit; padding:8px 12px; border:2px solid #253653; border-radius:4px; background:#ffd45b; color:#253653; cursor:pointer; }
+.result-actions button:disabled { opacity:.5; cursor:wait; }
+.result-panel textarea { width:100%; font:inherit; padding:10px; color:#253653; background:white; }
+.result-panel :focus-visible { outline:3px solid #AA94F7; outline-offset:3px; }
+@media(max-width:620px) { .result-grid { grid-template-columns:1fr; } .scorecard-preview { max-width:240px; } }
+
+/* Compact native menus: large Chinese text, keyboard focus and scroll at short heights. */
+.city-intro { max-width:760px; margin:16px auto 6px; padding:0 12px; text-align:center; color:#d5efe5; font-size:14px; line-height:1.8; }
+.sound-controls { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; }
+.sound-controls button, .training-toolbar button, .journey-panel button, .guide-panel button { font:inherit; border:2px solid #253653; border-radius:8px; background:#fff4d8; color:#253653; padding:9px 14px; cursor:pointer; transition:background-color .12s,box-shadow .12s; }
+.sound-controls button:hover, .journey-panel button:hover, .guide-panel button:hover, .training-toolbar button:hover { background:#bdeee0; }
+.sound-controls button[hidden] { display:none; }
+.journey-overlay, .guide-overlay { position:absolute; inset:0; z-index:20; overflow:auto; background:#253653e8; padding:clamp(10px,2vw,24px); color:#253653; }
+.journey-panel, .guide-panel { max-width:1000px; margin:auto; background:#fff4d8; border:3px solid #ffd45b; border-radius:12px; padding:clamp(14px,2vw,24px); box-shadow:0 5px 0 #18253b; }
+.journey-panel h1, .guide-panel h2 { margin:0 0 8px; font-size:clamp(21px,2.3vw,30px); color:#41366d; }
+.journey-panel p, .guide-panel p { margin:8px 0; line-height:1.65; }
+.journey-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:16px 0; }
+.journey-cards button { text-align:left; font-weight:bold; }
+.journey-cards button:first-child { grid-column:1/-1; }
+.journey-cards button[aria-pressed=true] { background:#ffd45b; box-shadow:inset 4px 0 #c37432; }
+.journey-detail { padding:12px 16px; background:#e9f3e8; border-radius:8px; border-left:4px solid #4fae87; }
+.journey-detail h2 { margin:0; font-size:20px; }
+.journey-note { font-size:13px; color:#526678; }
+.journey-objective { font-weight:bold; }
+.journey-panel button.primary, .guide-panel>button { background:#ffd45b; font-weight:bold; }
+.journey-nav { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+.boss-steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin:16px 0; }
+.boss-steps article { background:#fff; border:2px solid #b1d3c6; padding:12px; border-radius:8px; }
+.boss-steps h3 { font-size:16px; margin:8px 0; line-height:1.5; }
+.boss-steps p { font-size:14px; }
+.guide-symbol { color:#41366d; font-size:26px; letter-spacing:8px; text-align:center; background:#fff4d8; padding:8px; border-radius:6px; }
+.guide-tip { color:#526678; font-size:13px; }
+.training-toolbar { position:absolute; z-index:15; right:10px; top:6px; font-size:12px; }
+.training-toolbar button { padding:5px 10px; }
+.journey-panel :focus-visible, .guide-panel :focus-visible, .training-toolbar :focus-visible, .sound-controls :focus-visible { outline:3px solid #9c69cc; outline-offset:2px; }
+@media(max-width:720px) { .boss-steps { grid-template-columns:1fr; } .journey-cards { grid-template-columns:1fr; } .journey-detail { padding:10px; } .city-intro { font-size:12px; } }
+@media(prefers-reduced-motion:reduce) { button { transition:none !important; } }
+
+/* Keep the 480×270 world; resize its frame, not physics or jump distances. */
+html { --view-height:100dvh; }
+body { min-height:100svh; padding:12px; }
+.app-shell { width:min(100%,1120px); margin:auto; padding:max(0px,env(safe-area-inset-top)) max(0px,env(safe-area-inset-right)) max(0px,env(safe-area-inset-bottom)) max(0px,env(safe-area-inset-left)); }
+.play-deck { width:100%; position:relative; }
+.app-shell #game { width:min(100%,max(320px,calc((var(--view-height) - 210px) * 16 / 9))); margin:auto; }
+.app-shell .hint { margin:12px 0 0; }
+.display-controls { display:flex; flex-wrap:wrap; justify-content:center; align-items:center; gap:8px; margin:8px 0; }
+.display-controls button { min-height:40px; border:1px solid #9bb4c5; border-radius:8px; padding:6px 12px; font:inherit; color:#fff4d8; background:#253653; cursor:pointer; }
+#display-status { font-size:12px; }
+.display-controls [hidden], .compact-menu[hidden], .touch-controls[hidden] { display:none !important; }
+.touch-controls, .touch-tip, .compact-menu { display:none; }
+.compact-menu { position:absolute; inset:0; z-index:18; overflow:auto; overscroll-behavior:contain; background:#253653; padding:16px; color:#253653; }
+.compact-panel { max-width:680px; width:100%; margin:auto; padding:20px; border:3px solid #ffd45b; border-radius:14px; background:#fff4d8; overflow-wrap:anywhere; }
+.compact-panel h1 { font-size:24px; line-height:1.4; margin:0 0 12px; }
+.compact-panel h2 { font-size:22px; margin:0 0 10px; }
+.compact-panel p { line-height:1.65; margin:8px 0 14px; }
+.compact-panel button { font:inherit; line-height:1.5; min-height:48px; padding:10px 14px; border:2px solid #526678; border-radius:9px; background:#f5f6e6; color:#253653; cursor:pointer; }
+.compact-panel .primary, .compact-panel button[aria-pressed=true] { background:#ffd45b; border-color:#9d672f; }
+.compact-panel :focus-visible, .display-controls :focus-visible, .touch-controls :focus-visible { outline:3px solid #aa94f7; outline-offset:3px; }
+.menu-actions, .pause-actions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+.title-menu .compact-panel { text-align:center; }
+.title-menu .primary { min-width:200px; font-weight:bold; }
+.title-star { color:#ce923b; font-size:50px; line-height:1.2; margin-bottom:10px; }
+.menu-tip { color:#526678; font-size:14px; }
+.character-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin:12px 0; }
+.character-cards button { display:flex; align-items:center; gap:10px; text-align:left; padding:8px; }
+.character-cards img { width:32px; height:48px; object-fit:contain; image-rendering:pixelated; flex-shrink:0; }
+.character-cards span { font-size:14px; font-weight:bold; }
+.character-description { min-height:52px; font-size:14px; }
+.dialogue-lines { white-space:pre-line; }
+.dialogue-overlay button { display:block; width:100%; text-align:left; margin-top:10px; }
+.dialogue-overlay .secondary { background:transparent; font-size:14px; }
+.pause-overlay { z-index:19; }
+.touch-layout .compact-menu { display:flex; align-items:flex-start; }
+.touch-layout .compact-panel { flex-shrink:0; }
+.touch-layout .org-overlay { display:block; }
+.touch-layout .org-panel { margin:auto; }
+.touch-layout .org-panel input { font-size:18px; }
+.touch-layout .org-panel button, .touch-layout .journey-panel button, .touch-layout .guide-panel button, .touch-layout .result-panel button { min-height:48px; }
+.touch-layout :is(.org-overlay,.journey-overlay,.guide-overlay,.result-overlay) { overscroll-behavior:contain; padding:12px; }
+.touch-layout :is(.org-panel,.journey-panel,.guide-panel,.result-panel) { padding:16px; border-width:2px; box-shadow:none; }
+.touch-layout .journey-cards { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.touch-layout .journey-nav button { flex:1 1 120px; }
+.touch-layout .result-grid { grid-template-columns:1fr; gap:12px; }
+.touch-layout .scorecard-preview { max-width:240px; }
+.touch-layout .result-actions button { flex:1 1 160px; }
+.app-shell.touch-layout[data-screen=menu] #game { width:100%; height:max(260px,calc(var(--view-height) - 200px)); max-height:720px; aspect-ratio:auto; }
+.app-shell.touch-layout[data-screen=menu] :is(.city-intro,.disclaimer,.hint:not(.sound-controls)) { display:none; }
+.app-shell.touch-layout[data-screen=play] :is(.city-intro,.disclaimer,.hint:not(.sound-controls),.topline) { display:none; }
+.app-shell.touch-layout[data-screen=play] #game { width:min(100%,max(240px,calc((var(--view-height) - 300px) * 16 / 9))); }
+.touch-layout[data-screen=play] .touch-tip { display:block; font-size:12px; text-align:center; line-height:1.6; margin:8px 0 0; }
+.touch-layout .touch-controls { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:18px; }
+.touch-move { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.touch-actions { display:grid; grid-template-columns:repeat(2,1fr); gap:8px; }
+.touch-controls button { min-width:54px; min-height:54px; font:inherit; font-size:15px; font-weight:bold; color:#253653; background:#fff4d8; border:2px solid #adc4d6; border-radius:14px; box-shadow:0 4px 0 #101d32; touch-action:none; user-select:none; -webkit-user-select:none; -webkit-touch-callout:none; }
+.touch-controls button[data-action=jump] { background:#ffd45b; border-color:#ffe58e; min-width:70px; }
+.touch-controls button[data-action=pause] { font-size:13px; background:#c9dce5; }
+.touch-controls button[data-action=left], .touch-controls button[data-action=right] { font-size:25px; min-width:62px; }
+.touch-controls button.held { background:#73d6aa; box-shadow:0 1px 0 #101d32; transform:translateY(3px); }
+.touch-layout .training-toolbar { display:none; }
+.training-mobile-hint { display:none; }
+.touch-layout .training-mobile-hint { display:block; white-space:pre-line; background:#fff4d8; color:#253653; border-left:4px solid #73d6aa; border-radius:6px; padding:8px 12px; margin:12px 0 0; font-size:14px; line-height:1.6; }
+.touch-layout:has(.training-mobile-hint) .touch-tip { display:none; }
+.touch-layout .training-toolbar button { min-height:36px; padding:4px 10px; background:#fff4d8ec; }
+.app-shell.touch-layout .sound-controls { gap:6px; margin:10px 0 0; }
+.app-shell.touch-layout .sound-controls button { font-size:12px; min-height:40px; padding:6px 9px; }
+.app-shell.touch-layout .display-controls button { font-size:12px; }
+@media (max-width:480px) {
+  body { padding:8px; }
+  .compact-menu { padding:8px; }
+  .compact-panel { padding:14px; }
+  .compact-panel h1 { font-size:21px; }
+  .touch-layout .journey-cards { grid-template-columns:1fr; }
+  .app-shell.touch-layout[data-screen=play] #game { width:100%; }
+  .app-shell.touch-layout .sound-controls button { flex:1 1 auto; }
+}
+/* A landscape gamepad: thumbs sit beside, never over, the playable world. */
+@media (orientation:landscape) {
+  body { padding:6px; }
+  .app-shell { max-width:1400px; }
+  .app-shell.touch-layout .topline, .app-shell.touch-layout .touch-tip { display:none !important; }
+  .touch-layout .training-mobile-hint { display:none; }
+  .app-shell.touch-layout[data-screen=play] .play-deck { display:grid; grid-template-columns:104px minmax(0,1fr) 104px; align-items:center; gap:12px; }
+  .app-shell.touch-layout[data-screen=play] #game { grid-column:2; grid-row:1; width:min(100%,calc((var(--view-height) - 108px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) * 16 / 9)); border-width:3px; box-shadow:0 5px 0 #18253b; }
+  .app-shell.touch-layout[data-screen=play] .touch-controls { display:contents; }
+  .app-shell.touch-layout .touch-move { grid-column:1; grid-row:1; gap:6px; }
+  .app-shell.touch-layout .touch-actions { grid-column:3; grid-row:1; grid-template-columns:1fr; gap:6px; }
+  .app-shell.touch-layout .touch-controls button { min-width:0; min-height:48px; }
+  .app-shell.touch-layout .touch-actions button[data-action=jump] { min-height:62px; }
+  .app-shell.touch-layout[data-screen=menu] #game { height:max(210px,calc(var(--view-height) - 102px - env(safe-area-inset-top) - env(safe-area-inset-bottom))); max-height:none; }
+  .app-shell.touch-layout .sound-controls { margin-top:8px; }
+  .app-shell.touch-layout .display-controls { margin:4px 0 0; }
+  .app-shell.touch-layout :is(.sound-controls button,.display-controls button) { min-height:36px; }
+  .touch-layout .character-cards { grid-template-columns:repeat(4,minmax(0,1fr)); }
+  .touch-layout .character-cards button { flex-direction:column; text-align:center; }
+  .touch-layout .boss-steps { grid-template-columns:repeat(3,minmax(0,1fr)); }
+}
+@media (orientation:landscape) and (max-width:680px) { .app-shell.touch-layout[data-screen=play] .play-deck { grid-template-columns:96px minmax(0,1fr) 90px; gap:6px; } }

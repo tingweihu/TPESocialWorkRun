@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "id": "first-light",
+  "title": "被表格淹沒的街口",
+  "settingNote": "北門、迪化街、大稻埕與信義地景為縮景拼接，非真實步行路線；支援光橋與過載廣場為虛構場景。",
+  "world": {
+    "width": 2880,
+    "height": 270,
+    "viewportWidth": 480,
+    "viewportHeight": 270,
+    "groundTopY": 244,
+    "tileSize": 16
+  },
+  "spawn": {
+    "x": 64,
+    "y": 214
+  },
+  "acts": [
+    {
+      "id": "act1",
+      "title": "北門街口",
+      "fromX": 0,
+      "toX": 520
+    },
+    {
+      "id": "act2",
+      "title": "迪化街巷",
+      "fromX": 520,
+      "toX": 1130
+    },
+    {
+      "id": "act3",
+      "title": "大稻埕河岸",
+      "fromX": 1130,
+      "toX": 1930
+    },
+    {
+      "id": "act4",
+      "title": "信義遠景",
+      "fromX": 1930,
+      "toX": 2880
+    }
+  ],
+  "camera": {
+    "followPlayer": true,
+    "bossLockFromX": 2090,
+    "bossLockToX": 2570
+  },
+  "platforms": [
+    {
+      "id": "p1",
+      "x": 228,
+      "y": 198,
+      "width": 112,
+      "height": 16
+    },
+    {
+      "id": "p2",
+      "x": 780,
+      "y": 176,
+      "width": 128,
+      "height": 16
+    },
+    {
+      "id": "p3",
+      "x": 1270,
+      "y": 200,
+      "width": 108,
+      "height": 16
+    },
+    {
+      "id": "p4",
+      "x": 1490,
+      "y": 188,
+      "width": 112,
+      "height": 16
+    }
+  ],
+  "collectibles": [
+    {
+      "id": "star-1",
+      "type": "star",
+      "x": 260,
+      "y": 158
+    },
+    {
+      "id": "star-2",
+      "type": "star",
+      "x": 814,
+      "y": 144
+    },
+    {
+      "id": "star-3",
+      "type": "star",
+      "x": 1560,
+      "y": 150
+    }
+  ],
+  "enemies": [
+    {
+      "id": "paper-1",
+      "type": "paperSlime",
+      "x": 442,
+      "y": 220,
+      "range": [
+        405,
+        490
+      ]
+    },
+    {
+      "id": "paper-2",
+      "type": "paperSlime",
+      "x": 720,
+      "y": 220,
+      "range": [
+        650,
+        805
+      ]
+    },
+    {
+      "id": "deadline-1",
+      "type": "deadlineBat",
+      "x": 1210,
+      "y": 132,
+      "range": [
+        1160,
+        1300
+      ]
+    },
+    {
+      "id": "signal-1",
+      "type": "signalGhost",
+      "x": 1420,
+      "y": 184,
+      "range": [
+        1380,
+        1540
+      ]
+    },
+    {
+      "id": "fog-1",
+      "type": "stigmaFog",
+      "x": 1770,
+      "y": 184
+    }
+  ],
+  "npcs": [
+    {
+      "id": "team-mate",
+      "x": 290,
+      "y": 214,
+      "dialogueId": "intro-team"
+    },
+    {
+      "id": "ms-lin",
+      "x": 924,
+      "y": 214,
+      "dialogueId": "need"
+    },
+    {
+      "id": "coord",
+      "x": 1648,
+      "y": 214,
+      "dialogueId": "relay"
+    },
+    {
+      "id": "mentor",
+      "x": 1860,
+      "y": 214,
+      "dialogueId": "mentor"
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "cp1",
+      "x": 1030,
+      "y": 212
+    },
+    {
+      "id": "cp2",
+      "x": 1980,
+      "y": 212
+    }
+  ],
+  "bridgeGate": {
+    "id": "bridge-gate",
+    "x": 1750,
+    "y": 205,
+    "width": 72,
+    "height": 39,
+    "initiallyPassable": false,
+    "visualType": "signal-barrier",
+    "activationEventId": "relay",
+    "onActivation": "remove_barrier_and_show_lightbridge",
+    "avoidLethalPit": true
+  },
+  "boss": {
+    "id": "overload",
+    "x": 2430,
+    "y": 166,
+    "arenaStartX": 2090,
+    "arenaEndX": 2570,
+    "phases": [
+      {
+        "id": "paper",
+        "requiredStamps": 2,
+        "telegraphMs": 550,
+        "projectileWaveCount": 3
+      },
+      {
+        "id": "bridge",
+        "switches": [
+          {
+            "id": "left",
+            "x": 2208,
+            "y": 213
+          },
+          {
+            "id": "right",
+            "x": 2520,
+            "y": 213
+          }
+        ]
+      },
+      {
+        "id": "light",
+        "coreHitsRequired": 3,
+        "exposeIntervalMs": 2000,
+        "exposeWindowMs": 900
+      }
+    ]
+  },
+  "exit": {
+    "x": 2740,
+    "y": 215,
+    "requires": [
+      "need",
+      "relay",
+      "bridge",
+      "bossCleared"
+    ]
+  },
+  "accessibilityNote": "MVP 不使用無法恢復的陷阱與深坑，所有職類均可通關"
+}
