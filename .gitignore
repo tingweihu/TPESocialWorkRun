@@ -26,6 +26,9 @@
 !/starter/package-lock.json
 !/starter/tsconfig.json
 !/starter/vite.config.ts
+!/starter/tests/
+/starter/tests/*
+!/starter/tests/*.mjs
 !/starter/src/
 /starter/src/**
 !/starter/src/**/

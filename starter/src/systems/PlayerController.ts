@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { audioBus } from './AudioBus';
+import { MOVEMENT } from './Movement';
 
 export type TouchAction = 'left' | 'right' | 'jump' | 'skill' | 'interact' | 'pause';
 
@@ -32,17 +33,17 @@ export class PlayerController {
     const body = this.player.body as Phaser.Physics.Arcade.Body;
     const left = this.keys.LEFT.isDown || this.keys.A.isDown || this.touchHeld.has('left');
     const right = this.keys.RIGHT.isDown || this.keys.D.isDown || this.touchHeld.has('right');
-    this.player.setVelocityX(left === right ? 0 : left ? -170 : 170);
+    this.player.setVelocityX(left === right ? 0 : left ? -MOVEMENT.speed : MOVEMENT.speed);
     if (left !== right) this.player.setFlipX(left);
     if (body.blocked.down && body.velocity.y >= 0) this.lastGrounded = now;
     if (this.touchPressed.delete('jump') || this.pendingJump) this.jumpBuffered = now;
     this.pendingJump = false;
-    if (now - this.jumpBuffered <= 110 && now - this.lastGrounded <= 100) {
-      this.player.setVelocityY(-365);
+    if (now - this.jumpBuffered <= MOVEMENT.bufferMs && now - this.lastGrounded <= MOVEMENT.coyoteMs) {
+      this.player.setVelocityY(MOVEMENT.jumpVelocity);
       audioBus.play('jump');
       this.jumpBuffered = this.lastGrounded = -Infinity;
     }
-    if (!this.keys.SPACE.isDown && !this.keys.Z.isDown && !this.touchHeld.has('jump') && body.velocity.y < -160) this.player.setVelocityY(-160);
+    if (!this.keys.SPACE.isDown && !this.keys.Z.isDown && !this.touchHeld.has('jump') && body.velocity.y < MOVEMENT.shortJumpVelocity) this.player.setVelocityY(MOVEMENT.shortJumpVelocity);
   }
 
   skillPressed(): boolean {

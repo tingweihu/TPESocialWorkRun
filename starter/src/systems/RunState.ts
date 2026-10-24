@@ -26,12 +26,25 @@ export const ORGANIZATION_LIMIT = 30;
 
 export function cleanOrganization(value: string): string {
   return value.normalize('NFC')
+    .replace(/[\u00ad\u200b\u2060\ufeff]/g, '')
     .replace(/[\u0000-\u001f\u007f-\u009f\u200e\u200f\u202a-\u202e\u2066-\u2069]/g, ' ')
     .replace(/\s+/gu, ' ').trim();
 }
 
+/** Keep complete graphemes while retaining the 30-code-point storage contract. */
+export function truncateOrganization(value: string): string {
+  let result = '', count = 0;
+  for (const { segment } of new Intl.Segmenter('zh-TW', { granularity: 'grapheme' }).segment(cleanOrganization(value))) {
+    const size = Array.from(segment).length;
+    if (count + size > ORGANIZATION_LIMIT) break;
+    result += segment; count += size;
+  }
+  return result;
+}
+
 export function normalizeOrganization(value: string): string {
-  return Array.from(cleanOrganization(value)).slice(0, ORGANIZATION_LIMIT).join('') || DEFAULT_ORGANIZATION;
+  const result = truncateOrganization(value);
+  return result.replace(/[\p{Default_Ignorable_Code_Point}\p{Mark}\s]/gu, '') ? result : DEFAULT_ORGANIZATION;
 }
 
 export function createRun(organizationName = DEFAULT_ORGANIZATION, role: RoleId = 'family', spawnX = 64): RunState {

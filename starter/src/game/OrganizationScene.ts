@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import { responsiveLayout } from '../systems/ResponsiveLayout';
-import { cleanOrganization, DEFAULT_ORGANIZATION, getRun, normalizeOrganization, ORGANIZATION_LIMIT } from '../systems/RunState';
+import { cleanOrganization, DEFAULT_ORGANIZATION, getRun, normalizeOrganization, ORGANIZATION_LIMIT, truncateOrganization } from '../systems/RunState';
 
 export class OrganizationScene extends Phaser.Scene {
   constructor() { super('Organization'); }
@@ -67,8 +67,9 @@ export class OrganizationScene extends Phaser.Scene {
     const validate = (): void => {
       if (composing) return;
       const chars = Array.from(cleanOrganization(input.value));
-      if (chars.length > ORGANIZATION_LIMIT) input.value = chars.slice(0, ORGANIZATION_LIMIT).join('');
-      count.textContent = `${Math.min(chars.length, ORGANIZATION_LIMIT)} / 30 字${chars.length > ORGANIZATION_LIMIT ? '，已保留前 30 字' : '；不填寫顯示「冒險者」'}`;
+      const limited = truncateOrganization(input.value);
+      if (chars.length > ORGANIZATION_LIMIT) input.value = limited;
+      count.textContent = `${Array.from(limited).length} / 30 字${chars.length > ORGANIZATION_LIMIT ? '，已縮短並保留完整字元' : '；不填寫顯示「冒險者」'}`;
     };
     const leave = (scene: string, value?: string): void => {
       if (leaving || composing) return;

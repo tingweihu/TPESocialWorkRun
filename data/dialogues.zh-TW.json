@@ -1,42 +1,6 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "language": "zh-TW",
-  "prologue": [
-    {
-      "id": "O01",
-      "speaker": "旁白",
-      "text": "有一座城市，日夜不停地運轉。"
-    },
-    {
-      "id": "O02",
-      "speaker": "旁白",
-      "text": "有時候，困難會變得……看得見。"
-    },
-    {
-      "id": "O03",
-      "speaker": "旁白",
-      "text": "紙山、時限，還有斷線的連結。"
-    },
-    {
-      "id": "O04",
-      "speaker": "旁白",
-      "text": "幸好，這裡從來不只一個人在努力。"
-    }
-  ],
-  "afterCharacterSelected": [
-    {
-      "speaker": "阿光",
-      "text": "今天城市有點亂，連路標都被表格埋住了。"
-    },
-    {
-      "speaker": "玩家",
-      "text": "那就一段一段整理，別忘了找夥伴。"
-    },
-    {
-      "speaker": "阿光",
-      "text": "先到光之街口看看吧！"
-    }
-  ],
   "conversations": {
     "intro-team": {
       "speaker": "阿光",
@@ -135,7 +99,7 @@
       }
     ],
     "phaseHints": {
-      "paper": "先踩亮兩個工作分配章！",
+      "paper": "踩亮工作分配章！",
       "bridge": "按 E 啟動左右合作開關！",
       "light": "核心亮起時，跳上去接通支持之光！"
     },

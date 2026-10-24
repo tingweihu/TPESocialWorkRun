@@ -34,7 +34,7 @@ export class StoryWorld {
     scene.physics.add.existing(this.barrier, true);
     this.barrierCollider = scene.physics.add.collider(player, this.barrier);
     this.lightBridge = platforms.create(gate.x, gate.y, 'platform') as Phaser.Physics.Arcade.Image;
-    this.lightBridge.setDisplaySize(gate.width, 8).setTint(0x73D6AA).setDepth(10).refreshBody().disableBody(true, true);
+    this.lightBridge.setDisplaySize(gate.width, gate.height).setTint(0x73D6AA).setDepth(10).refreshBody().disableBody(true, true);
     this.bridgeLabel = scene.add.text(gate.x, 92, '訊號中斷\n← 找小連確認連結', { fontFamily: UI_FONT, fontSize: '11px', color: '#41366D', align: 'center', backgroundColor: '#FFF4D8' }).setOrigin(0.5).setDepth(18);
     for (const checkpoint of level.checkpoints) {
       scene.add.rectangle(checkpoint.x, 229, 4, 30, 0x253653).setDepth(5);
@@ -48,7 +48,7 @@ export class StoryWorld {
     scene.add.image(entranceX + 17, 213, 'finish').setScale(2).setDepth(11);
     scene.add.text(entranceX - 70, 101, '過載廣場\n一起分擔，接通支持', { fontFamily: UI_FONT, fontSize: '13px', color: '#FFF4D8', backgroundColor: '#41366D', align: 'center' }).setOrigin(0.5).setDepth(12);
     // The entrance seal requires both encounters and an active bridge.
-    this.exit = scene.add.image(level.exit.x, 222, 'finish').setDepth(10).setAlpha(0.35);
+    this.exit = scene.add.image(level.exit.x, level.exit.y, 'finish').setDepth(10).setAlpha(0.35);
     scene.add.rectangle(240, 39, 480, 18, 0x253653, 0.92).setScrollFactor(0).setDepth(50);
     this.network = scene.add.graphics().setScrollFactor(0).setDepth(51);
     this.progress = scene.add.text(78, 32, '', { fontFamily: UI_FONT, fontSize: '12px', color: '#FFF4D8' }).setScrollFactor(0).setDepth(51);

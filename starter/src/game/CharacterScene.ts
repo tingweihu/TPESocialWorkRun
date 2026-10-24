@@ -55,8 +55,15 @@ export class CharacterScene extends Phaser.Scene {
     const grid = document.createElement('div'); grid.className = 'character-cards';
     this.mobileCards = ROLES.map((role, index) => {
       const button = menuButton(grid, '', () => this.pick(index)); button.dataset.role = role.id;
+      button.addEventListener('focus', () => this.pick(index));
       const sprite = document.createElement('img'); sprite.alt = ''; sprite.src = (this.textures.get(`hero-${role.id}`).getSourceImage() as HTMLCanvasElement).toDataURL();
       const label = document.createElement('span'); label.textContent = `${role.name} · ${role.ability}`; button.append(sprite, label); return button;
+    });
+    grid.addEventListener('keydown', event => {
+      if (event.key !== 'ArrowLeft' && event.key !== 'ArrowRight') return;
+      event.preventDefault(); event.stopPropagation();
+      this.pick((this.current + (event.key === 'ArrowLeft' ? -1 : 1) + ROLES.length) % ROLES.length);
+      this.mobileCards[this.current].focus();
     });
     this.mobileDescription = document.createElement('p'); this.mobileDescription.className = 'character-description';
     mobile.append(heading, name, grid, this.mobileDescription);
@@ -74,6 +81,6 @@ export class CharacterScene extends Phaser.Scene {
     this.abilityText.setText(`技能：${r.ability} · J / X · 冷卻 ${r.cooldownMs / 1000} 秒`);
     this.introText.setText('「' + r.intro + '」');
     this.mobileCards.forEach((card, i) => card.setAttribute('aria-pressed', String(i === this.current)));
-    if (this.mobileDescription) this.mobileDescription.textContent = `${r.title}｜${r.intro}（技能冷卻 ${r.cooldownMs / 1000} 秒）`;
+    if (this.mobileDescription) this.mobileDescription.textContent = `${r.title} · ${r.domain}｜${r.intro}（技能冷卻 ${r.cooldownMs / 1000} 秒）`;
   }
 }

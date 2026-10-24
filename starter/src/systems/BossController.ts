@@ -5,6 +5,8 @@ import { UI_FONT } from '../game/roles';
 import { readyForBoss } from './Encounters';
 import type { RunState } from './RunState';
 import { audioBus } from './AudioBus';
+import { coreWindow, paperWave, phaseTarget } from './BossRules';
+import { stageById } from './Journey';
 
 export class BossController {
   active = false;
@@ -24,8 +26,9 @@ export class BossController {
   private switchIds = new Set<number>();
 
   constructor(private scene: Phaser.Scene, private run: RunState, private player: Phaser.Physics.Arcade.Sprite,
-    private hurt: () => void, private onClear: () => void) {
-    this.sprite = scene.add.image(level.boss.x, 208, 'boss-threat').setDepth(9).setVisible(false);
+    private hurt: () => void, private onClear: () => void, private definition = level) {
+    const level = this.definition;
+    this.sprite = scene.add.image(level.boss.x, level.boss.y, 'boss-threat').setDepth(9).setVisible(false);
     this.hazards = scene.physics.add.group({ allowGravity: false });
     scene.physics.add.overlap(player, this.hazards, () => { if (this.active) this.hurt(); });
     this.walls = [level.boss.arenaStartX - 8, level.boss.arenaEndX + 8].map(x => {
@@ -33,39 +36,40 @@ export class BossController {
       scene.physics.add.existing(wall, true); (wall.body as Phaser.Physics.Arcade.StaticBody).enable = false;
       scene.physics.add.collider(player, wall); return wall;
     });
-    this.stamps = [2240, 2490].map((x, i) => {
-      const stamp = scene.physics.add.staticImage(x, 232, 'work-stamp').setDepth(12).disableBody(true, true);
+    this.stamps = level.boss.phases.paper.stamps.map(({ x, y }, i) => {
+      const stamp = scene.physics.add.staticImage(x, y, 'work-stamp').setDepth(12).disableBody(true, true);
       scene.physics.add.overlap(player, stamp, () => {
         const body = player.body as Phaser.Physics.Arcade.Body;
         if (!this.active || run.bossStage !== 'paper' || run.elapsedMs < this.introUntil || this.stampIds.has(i) || body.velocity.y <= 0 || body.prev.y + body.height > (stamp.body as Phaser.Physics.Arcade.StaticBody).top + 7) return;
         this.stampIds.add(i); stamp.setTint(0x73D6AA); player.setVelocityY(-180); audioBus.play('support');
         run.bossProgress = this.stampIds.size;
-        if (this.stampIds.size === 2) this.phase('bridge');
+        if (this.stampIds.size >= level.boss.phases.paper.requiredStamps) this.phase('bridge');
       }); return stamp;
     });
-    this.switches = level.boss.phases[1].switches!.map(s => scene.add.image(s.x, s.y, 'support-switch').setDepth(12).setVisible(false));
-    this.core = scene.physics.add.staticImage(2350, 170, 'support-core').setDepth(15).disableBody(true, true);
+    this.switches = level.boss.phases.bridge.switches.map(s => scene.add.image(s.x, s.y, 'support-switch').setDepth(12).setVisible(false));
+    this.core = scene.physics.add.staticImage(level.boss.phases.light.x, level.boss.phases.light.y, 'support-core').setDepth(15).disableBody(true, true);
     scene.physics.add.overlap(player, this.core, () => {
       const body = player.body as Phaser.Physics.Arcade.Body;
-      const age = run.elapsedMs - this.phaseStart; const windowId = Math.floor(age / 2000);
-      if (!this.active || run.bossStage !== 'light' || age % 2000 >= 900 || this.lastCoreWindow === windowId || body.velocity.y <= 0 || body.prev.y + body.height > this.core.y + 18) return;
-      this.lastCoreWindow = windowId; run.bossProgress++; player.setVelocityY(-180); audioBus.play('support');
-      if (run.bossProgress >= 3) this.clear();
+      const window = coreWindow(run.elapsedMs - this.phaseStart, level.boss.phases.light);
+      if (!this.active || run.bossStage !== 'light' || !window.exposed || this.lastCoreWindow === window.index || body.velocity.y <= 0 || body.prev.y + body.height > this.core.y + 18) return;
+      this.lastCoreWindow = window.index; run.bossProgress++; player.setVelocityY(-180); audioBus.play('support');
+      if (run.bossProgress >= level.boss.phases.light.coreHitsRequired) this.clear();
     });
     this.hud = scene.add.text(240, 77, '', { fontFamily: UI_FONT, fontSize: '12px', color: '#FFF4D8', backgroundColor: '#41366D', padding: { x: 8, y: 4 } }).setScrollFactor(0).setOrigin(0.5).setDepth(55).setVisible(false);
     this.warning = scene.add.text(240, 102, '', { fontFamily: UI_FONT, fontSize: '11px', color: '#253653', backgroundColor: '#FFD45B', padding: { x: 4, y: 2 } }).setScrollFactor(0).setOrigin(0.5).setDepth(55).setVisible(false);
   }
 
   begin(): boolean {
+    const level = this.definition;
     if (this.active || this.run.bossStage === 'cleared' || !readyForBoss(this.run) || this.run.status !== 'playing') return false;
     this.active = true; this.stampIds.clear(); this.switchIds.clear(); this.lastCoreWindow = -1;
     this.run.stamina = 3; // The checkpoint before the arena is a rest stop for every role.
     (this.player.body as Phaser.Physics.Arcade.Body).reset(level.boss.arenaStartX + 25, 230);
     this.walls.forEach(w => { w.setVisible(true); (w.body as Phaser.Physics.Arcade.StaticBody).enable = true; });
-    this.scene.cameras.main.stopFollow().setBounds(2090, 0, 480, 270).setScroll(2090, 0).setBackgroundColor('#7875AE').shake(140, 0.003);
+    this.scene.cameras.main.stopFollow().setBounds(level.camera.bossLockFromX, 0, level.camera.bossLockToX - level.camera.bossLockFromX, level.world.height).setScroll(level.camera.bossLockFromX, 0).setBackgroundColor('#7875AE').shake(140, 0.003);
     this.sprite.setVisible(true).setAlpha(1).setScale(1).setPosition(level.boss.x, 112).setTexture('boss-threat');
-    this.scene.tweens.add({ targets: this.sprite, y: 208, duration: 650, ease: 'Bounce.Out' });
-    this.introUntil = this.run.elapsedMs + 1800; this.phase('paper');
+    this.scene.tweens.add({ targets: this.sprite, y: level.boss.y, duration: 650, ease: 'Bounce.Out' });
+    this.introUntil = this.run.elapsedMs + level.boss.entryDurationMs; this.phase('paper');
     return true;
   }
 
@@ -92,44 +96,44 @@ export class BossController {
         this.switchIds.add(i); s.setTint(0x73D6AA); this.run.bossProgress = this.switchIds.size; audioBus.play('support');
       }
     });
-    if (this.switchIds.size === 2) this.phase('light');
+    if (this.switchIds.size === this.definition.boss.phases.bridge.switches.length) this.phase('light');
   }
 
   update(): void {
     if (!this.active) return;
+    const level = this.definition;
     const now = this.run.elapsedMs; const age = now - this.phaseStart;
-    this.hud.setVisible(true).setText(`過載巨獸 · 負荷 ${this.run.bossStage === 'paper' ? '▰▰▰' : this.run.bossStage === 'bridge' ? '▰▰▱' : '▰▱▱'} ｜ ${script.boss.phaseHints[this.run.bossStage as 'paper' | 'bridge' | 'light']} ${this.run.bossProgress}/${this.run.bossStage === 'light' ? 3 : 2}`);
+    this.hud.setVisible(true).setText(`過載巨獸 · 負荷 ${this.run.bossStage === 'paper' ? '▰▰▰' : this.run.bossStage === 'bridge' ? '▰▰▱' : '▰▱▱'} ｜ ${script.boss.phaseHints[this.run.bossStage as 'paper' | 'bridge' | 'light']} ${this.run.bossProgress}/${phaseTarget(level.boss, this.run.bossStage)}`);
     if (now < this.introUntil) {
-      this.warning.setVisible(true).setText(script.boss.onEntry[now < this.introUntil - 900 ? 0 : 1].text); return;
+      this.warning.setVisible(true).setText(script.boss.onEntry[now < this.introUntil - level.boss.entryDurationMs / 2 ? 0 : 1].text); return;
     }
     const stage = this.run.bossStage;
     if (stage === 'paper' || stage === 'bridge') {
-      // Allow the spaced three-sheet wave to pass before the 1.5s recovery gap.
-      const cycle = stage === 'paper' ? 4500 : 5000;
-      const wave = Math.floor(age / cycle); const telegraph = age % cycle < 550;
-      this.warning.setVisible(telegraph).setText('紙張將從右側飛來 · 跳躍或錯開高度');
-      if (!telegraph && wave !== this.lastWave) {
-        this.lastWave = wave;
-        [232, 232, 232].forEach((y, i) => {
-          const paper = this.hazards.create(2540 + i * 110, y, 'paper-bolt') as Phaser.Physics.Arcade.Image;
+      const phase = level.boss.phases[stage];
+      const wave = paperWave(age, phase);
+      this.warning.setVisible(wave.warning).setText('紙張將從右側飛來 · 跳躍或錯開高度');
+      if (!wave.warning && wave.index !== this.lastWave) {
+        this.lastWave = wave.index;
+        Array.from({ length: phase.projectileWaveCount }, (_, i) => {
+          const paper = this.hazards.create(level.boss.arenaEndX - 30 + i * 110, 232, 'paper-bolt') as Phaser.Physics.Arcade.Image;
           paper.setDepth(18).setVelocityX(-130 - i * 12).setData('born', now).setData('speed', -130 - i * 12);
         });
       }
     } else {
-      const exposed = age % 2000 < 900;
+      const { exposed } = coreWindow(age, level.boss.phases.light);
       this.core.setAlpha(exposed ? 1 : 0.25).setScale(exposed ? 1.1 : 1);
       this.warning.setVisible(true).setText(exposed ? '核心亮起！按住跳躍，落下時接通光球' : '等待核心亮起 · 下一次仍有機會');
     }
     for (const item of [...this.hazards.getChildren()] as Phaser.Physics.Arcade.Image[]) {
       if (item.getData('bat')) item.setVelocity((2330 + Math.sin(age / 700) * 115 - item.x) * 8, (148 + Math.sin(age / 450) * 24 - item.y) * 8);
-      else if (item.x < 2090 || now - item.getData('born') > 4500) item.destroy();
+      else if (item.x < level.boss.arenaStartX || now - item.getData('born') > 4500) item.destroy();
       else item.setVelocityX(item.getData('speed') * (stage === 'bridge' ? 1 - 0.3 * this.switchIds.size : 1));
     }
   }
 
   private clear(): void {
     audioBus.setMusic('clear');
-    this.active = false; this.run.bossStage = 'cleared'; this.run.bossProgress = 3;
+    this.active = false; this.run.bossStage = 'cleared'; this.run.bossProgress = this.definition.boss.phases.light.coreHitsRequired;
     this.release(); this.core.disableBody(true, true);
     this.sprite.setTexture('boss-cleared');
     this.scene.tweens.add({ targets: this.sprite, alpha: 0, scale: 0.4, y: 170, duration: 950 });
@@ -148,6 +152,7 @@ export class BossController {
   private release(): void {
     this.hazards.clear(true, true);
     this.walls.forEach(w => { w.setVisible(false); (w.body as Phaser.Physics.Arcade.StaticBody).enable = false; });
-    this.scene.cameras.main.setBounds(0, 0, level.world.width, level.world.height).startFollow(this.player, true, 0.12, 0.12);
+    const practice = this.run.mode === 'practice' ? stageById(this.run.practiceStage) : undefined;
+    this.scene.cameras.main.setBounds(practice?.from ?? 0, 0, practice ? practice.to - practice.from : this.definition.world.width, this.definition.world.height).startFollow(this.player, true, 0.12, 0.12);
   }
 }

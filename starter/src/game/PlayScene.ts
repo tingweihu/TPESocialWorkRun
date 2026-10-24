@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { focusGame, focusMenu } from '../systems/NativeMenu';
 import { drawTaipeiCity } from '../art/taipei';
 import level from '../../../data/level01.json';
 import { ROLES, UI_FONT } from './roles';
@@ -288,6 +289,8 @@ export class PlayScene extends Phaser.Scene {
     this.dialogue.setPaused(this.paused);
     this.syncSimulation();
     this.controller.reset(); this.lastTick = performance.now();
+    if (this.paused) focusMenu(this.pauseOverlay);
+    else if (!this.dialogue.active) focusGame();
   }
 
   private syncSimulation(): void {

@@ -1,3 +1,5 @@
+import level from '../../../data/level01.json';
+
 export const STAGES = [
   { id: 'beimen', number: '01', title: '北門・暖身街口', subtitle: '把第一步，交給一點點勇氣。', description: '跟阿光打聲招呼，試著跳過紙山。走到街口另一端，就完成這段散步。', objective: '向右抵達街口終點', from: 0, to: 520, spawn: 64, goal: 500 },
   { id: 'dihua', number: '02', title: '迪化街・好好聽你說', subtitle: '騎樓下，留一個慢慢說話的位置。', description: '找到林小姐，先聽懂她最急迫的需要。選錯也沒關係，聊一聊，再一起想辦法。', objective: '完成需求對話，再走到休息站右側', from: 520, to: 1130, spawn: 600, goal: 1100 },
@@ -9,7 +11,7 @@ export type JourneyLaunch = { mode?: 'story' | 'practice'; stage?: StageId };
 export const stageById = (id: unknown) => STAGES.find(stage => stage.id === id);
 
 export const BOSS_STEPS = [
-  { symbol: '↓  ▰  ↓', title: '① 分配工作 · 踩亮兩枚章', text: '兩枚章在地板上。走近後按住「跳躍」（Space／Z），落下時踩中；每枚各一次。低位紙浪來了就跳過。' },
-  { symbol: '←  E  →', title: '② 接通支援 · 開啟兩側開關', text: '走到左右兩側的綠色開關旁，分別按「互動」（E／Enter）。兩邊都亮起，就能進入最後一階段。' },
-  { symbol: '↑  ✦  ↓', title: '③ 點亮核心 · 接通光球三次', text: '站在亮起的光球下方，按住「跳躍」，從上方落下碰到光球。每次亮起只能接通一次，共三次。' },
+  { symbol: '↓  ▰  ↓', title: `① 分配工作 · 踩亮 ${level.boss.phases.paper.requiredStamps} 枚章`, text: '工作章在地板上。走近後按住「跳躍」（Space／Z），落下時踩中；每枚各一次。低位紙浪來了就跳過。' },
+  { symbol: '←  E  →', title: `② 接通支援 · 開啟 ${level.boss.phases.bridge.switches.length} 個開關`, text: '走到綠色開關旁，分別按「互動」（E／Enter）。全部亮起，就能進入最後一階段。' },
+  { symbol: '↑  ✦  ↓', title: `③ 點亮核心 · 接通光球 ${level.boss.phases.light.coreHitsRequired} 次`, text: '站在亮起的光球下方，按住「跳躍」，從上方落下碰到光球。每次亮起只能接通一次，累積到目標次數就完成。' },
 ] as const;

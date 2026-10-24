@@ -3,6 +3,7 @@ import { UI_FONT } from '../game/roles';
 import { completeEncounter, conversations, type Choice, type DialogueId } from './Encounters';
 import type { RunState } from './RunState';
 import { stopButtonActivation } from './ResponsiveLayout';
+import { focusGame, focusMenu } from './NativeMenu';
 
 export class DialogueController {
   active = false;
@@ -40,9 +41,10 @@ export class DialogueController {
     this.panel?.destroy(); this.panel = undefined; this.rows = [];
     this.mobile?.remove(); this.mobile = undefined; this.mobileChoices = [];
     this.onModal(false);
+    focusGame();
   }
 
-  setPaused(paused: boolean): void { this.panel?.setVisible(!paused); if (this.mobile) this.mobile.hidden = paused; }
+  setPaused(paused: boolean): void { this.panel?.setVisible(!paused); if (this.mobile) { this.mobile.hidden = paused; if (!paused) focusMenu(this.mobile); } }
 
   handle(input: { direction: number; confirm: boolean }): void {
     if (!this.active) return;
@@ -104,13 +106,24 @@ export class DialogueController {
     this.mobile?.remove(); this.mobileChoices = [];
     this.mobile = document.createElement('section'); this.mobile.className = 'compact-menu dialogue-overlay'; this.mobile.setAttribute('aria-label', `${conversations[this.id].speaker}的對話`);
     this.mobile.addEventListener('keydown', stopButtonActivation);
+    this.mobile.setAttribute('role', 'dialog');
+    this.mobile.addEventListener('keydown', event => {
+      if (this.phase !== 'choices' || (event.key !== 'ArrowUp' && event.key !== 'ArrowDown')) return;
+      event.preventDefault(); event.stopPropagation();
+      this.selected = Phaser.Math.Wrap(this.selected + (event.key === 'ArrowUp' ? -1 : 1), 0, this.mobileChoices.length);
+      this.highlight(); this.mobileChoices[this.selected].focus();
+    });
     const panel = document.createElement('div'); panel.className = 'compact-panel';
     const heading = document.createElement('h2'); heading.textContent = conversations[this.id].speaker;
     const text = document.createElement('p'); text.className = 'dialogue-lines'; text.textContent = this.lines.join('\n'); panel.append(heading, text);
     const add = (label: string, action: () => void): HTMLButtonElement => { const button = document.createElement('button'); button.type = 'button'; button.textContent = label; button.addEventListener('click', action); panel.append(button); return button; };
-    choices.forEach((choice, index) => { const button = add(choice.label, () => this.choose(index)); button.dataset.choice = choice.id; this.mobileChoices.push(button); });
+    choices.forEach((choice, index) => {
+      const button = add(choice.label, () => this.choose(index)); button.dataset.choice = choice.id;
+      button.addEventListener('focus', () => { this.selected = index; this.highlight(); });
+      this.mobileChoices.push(button);
+    });
     if (!choices.length) add(this.phase === 'reply' ? '再想一想' : '繼續冒險', () => this.choose(0)).className = 'primary';
     add('先離開對話', () => this.close()).className = 'secondary';
-    this.mobile.append(panel); document.querySelector('#game')!.append(this.mobile); this.highlight();
+    this.mobile.append(panel); document.querySelector('#game')!.append(this.mobile); this.highlight(); focusMenu(this.mobile);
   }
 }

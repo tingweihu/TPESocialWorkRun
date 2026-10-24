@@ -1,40 +1,25 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "description": "本檔定義互動條件；台詞請讀 dialogues.zh-TW.json",
   "encounters": [
     {
       "id": "need",
       "npcId": "ms-lin",
-      "x": 924,
-      "y": 214,
       "interactionRangePx": 44,
-      "prerequisites": [],
       "completionChoiceId": "listen",
       "onComplete": {
-        "flag": "need",
-        "playCue": "support-light",
-        "giveItem": "needs-clue",
-        "repeatReward": false
-      },
-      "allowRetry": true,
-      "canReopenCompleted": true
+        "flag": "need"
+      }
     },
     {
       "id": "relay",
       "npcId": "coord",
-      "x": 1648,
-      "y": 214,
       "interactionRangePx": 44,
-      "prerequisites": [],
       "completionChoiceId": "confirm",
       "onComplete": {
         "flag": "relay",
-        "bridgeActive": true,
-        "playCue": "bridge-light",
-        "repeatReward": false
-      },
-      "allowRetry": true,
-      "canReopenCompleted": true
+        "bridgeActive": true
+      }
     }
   ]
 }

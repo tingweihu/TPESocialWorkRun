@@ -1,4 +1,6 @@
 import type Phaser from 'phaser';
+import { focusMenu, stopButtonActivation } from './NativeMenu';
+export { stopButtonActivation } from './NativeMenu';
 
 class ResponsiveLayout {
   private shell?: HTMLElement;
@@ -54,18 +56,16 @@ class ResponsiveLayout {
 }
 export const responsiveLayout = new ResponsiveLayout();
 
-/** Larger native controls for narrow/coarse-pointer screens; desktop canvas stays intact. */
+/** Native controls are available at every viewport size, independently of touch input. */
 export function compactPanel(scene: Phaser.Scene, label: string, className = ''): HTMLElement {
   const overlay = document.createElement('section'); overlay.className = `compact-menu ${className}`;
   overlay.setAttribute('aria-label', label);
   const panel = document.createElement('div'); panel.className = 'compact-panel'; overlay.append(panel);
   overlay.addEventListener('keydown', stopButtonActivation);
   document.querySelector('#game')!.append(overlay);
+  focusMenu(overlay);
   scene.events.once('shutdown', () => overlay.remove());
   return panel;
-}
-export function stopButtonActivation(event: KeyboardEvent): void {
-  if (event.target instanceof HTMLButtonElement && (event.key === 'Enter' || event.key === ' ')) event.stopPropagation();
 }
 export function menuButton(parent: HTMLElement, label: string, action: () => void): HTMLButtonElement {
   const button = document.createElement('button'); button.type = 'button'; button.textContent = label;

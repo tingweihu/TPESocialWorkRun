@@ -6,6 +6,7 @@ export interface Role {
   id: RoleId;
   name: string;
   title: string;
+  domain: string;
   color: number;
   ability: string;
   intro: string;
@@ -14,7 +15,7 @@ export interface Role {
 }
 
 export const ROLES: Role[] = characters.playable.map(r => ({
-  id: r.id as RoleId, name: r.name, title: r.title,
+  id: r.id as RoleId, name: r.name, title: r.title, domain: r.domain,
   color: Number.parseInt(r.color.slice(1), 16), ability: r.ability.name, intro: r.intro,
   cooldownMs: r.ability.cooldownSeconds * 1000, durationMs: r.ability.durationSeconds * 1000,
 }));

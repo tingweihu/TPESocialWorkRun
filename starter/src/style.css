@@ -84,8 +84,8 @@ body { min-height:100svh; padding:12px; }
 .display-controls button { min-height:40px; border:1px solid #9bb4c5; border-radius:8px; padding:6px 12px; font:inherit; color:#fff4d8; background:#253653; cursor:pointer; }
 #display-status { font-size:12px; }
 .display-controls [hidden], .compact-menu[hidden], .touch-controls[hidden] { display:none !important; }
-.touch-controls, .touch-tip, .compact-menu { display:none; }
-.compact-menu { position:absolute; inset:0; z-index:18; overflow:auto; overscroll-behavior:contain; background:#253653; padding:16px; color:#253653; }
+.touch-controls, .touch-tip { display:none; }
+.compact-menu { display:flex; align-items:flex-start; position:absolute; inset:0; z-index:18; overflow:auto; overscroll-behavior:contain; background:#253653e8; padding:16px; color:#253653; }
 .compact-panel { max-width:680px; width:100%; margin:auto; padding:20px; border:3px solid #ffd45b; border-radius:14px; background:#fff4d8; overflow-wrap:anywhere; }
 .compact-panel h1 { font-size:24px; line-height:1.4; margin:0 0 12px; }
 .compact-panel h2 { font-size:22px; margin:0 0 10px; }
@@ -107,8 +107,7 @@ body { min-height:100svh; padding:12px; }
 .dialogue-overlay button { display:block; width:100%; text-align:left; margin-top:10px; }
 .dialogue-overlay .secondary { background:transparent; font-size:14px; }
 .pause-overlay { z-index:19; }
-.touch-layout .compact-menu { display:flex; align-items:flex-start; }
-.touch-layout .compact-panel { flex-shrink:0; }
+.compact-panel { flex-shrink:0; }
 .touch-layout .org-overlay { display:block; }
 .touch-layout .org-panel { margin:auto; }
 .touch-layout .org-panel input { font-size:18px; }
