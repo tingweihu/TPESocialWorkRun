@@ -72,6 +72,13 @@ export function collectStar(run: RunState, id: string, validIds: readonly string
   return true;
 }
 
+/** A newly reached rest stop heals once without clearing story or star progress. */
+export function activateCheckpoint(run: RunState, x: number): boolean {
+  if (run.status !== 'playing' || x <= run.checkpointX) return false;
+  run.checkpointX = x; run.stamina = 3;
+  return true;
+}
+
 // A result requires all objectives in the shared state, not a Scene payload.
 export function hasCompletedObjectives(run: RunState): boolean {
   return run.mode === 'story' && run.encounters.need && run.encounters.relay && run.bridgeActive && run.bossStage === 'cleared';

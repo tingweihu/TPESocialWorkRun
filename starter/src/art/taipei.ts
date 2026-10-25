@@ -1,7 +1,9 @@
 import type Phaser from 'phaser';
 import { UI_FONT } from '../game/roles';
+import level from '../../../data/level01.json';
+import { sceneryAnchor, scenerySlices } from './sceneryLayout';
 
-// Original pixel interpretations. Source/context: docs/12_TAIPEI_CONTEXT.md.
+// Original pixel interpretations. Source/context: docs/SOURCES.md.
 // Landmarks are scenery only; none receives an Arcade body or an official logo.
 type Rect = (color: number, x: number, y: number, width: number, height: number) => void;
 const painter = (g: Phaser.GameObjects.Graphics): Rect => (color,x,y,w,h) => { g.fillStyle(color); g.fillRect(Math.round(x),Math.round(y),Math.round(w),Math.round(h)); };
@@ -12,6 +14,20 @@ function bake(scene: Phaser.Scene, graphics: Phaser.GameObjects.Graphics, key: s
   if (!scene.textures.exists(key)) graphics.generateTexture(key, width, height);
   graphics.destroy();
   return scene.add.image(0, 0, key).setOrigin(0).setScrollFactor(scroll).setName(key);
+}
+
+function bakeLayer(scene: Phaser.Scene, name: string, scroll: number, paint: (rect: Rect) => void): void {
+  for (const slice of scenerySlices(level.world.width, level.world.viewportWidth, scroll)) {
+    const key = `${name}-${level.world.width}-${slice.x}`;
+    if (!scene.textures.exists(key)) {
+      const graphics = scene.add.graphics(), rect = painter(graphics);
+      paint((color, x, y, width, height) => {
+        if (x + width >= slice.x && x < slice.x + slice.width) rect(color, x - slice.x, y, width, height);
+      });
+      graphics.generateTexture(key, slice.width, level.world.height); graphics.destroy();
+    }
+    scene.add.image(slice.x, 0, key).setOrigin(0).setScrollFactor(scroll).setName(key);
+  }
 }
 
 export function paintTaipei101(rect: Rect, x: number, base: number, scale = 1): void {
@@ -51,52 +67,76 @@ function shophouse(rect: Rect, x: number, base: number, variant: number): void {
 }
 
 export function drawTaipeiCity(scene: Phaser.Scene): void {
-  const far=scene.add.graphics().setScrollFactor(.1).setName('taipei-mountains');const f=painter(far);
-  f(0xFFF4D8,382,68,26,26);
-  for(let i=0;i<12;i++) {
-    const x=i*80; f(0x9DD8CB,x,176,80,56);f(0x9DD8CB,x+12,151-i%3*8,56,80);f(0x9DD8CB,x+26,139-i%3*8,28,90);
-    if(i%2===0)f(0xFFF4D8,x+12,72+i%3*10,48,7);
+  const viewport = level.world.viewportWidth;
+  const anchor = (worldX: number, scroll: number) => sceneryAnchor(worldX, viewport, scroll);
+  const [north, dihua, river, xinyi] = level.acts;
+  const skylineX = anchor((level.boss.arenaStartX + level.boss.arenaEndX) / 2, .1);
+  const northX = anchor(north.fromX + 320, .35);
+  const shopsX = anchor(dihua.fromX + 270, .35);
+  const riverStart = anchor(river.fromX, .35) - 110;
+  const riverEnd = anchor(river.toX, .35) + 70;
+  const trackStart = anchor(xinyi.fromX + 240, .35);
+  const trackEnd = anchor(level.exit.x, .35) + 180;
+  const layerEnd = (scroll: number) => viewport + (level.world.width - viewport) * scroll;
+
+  bakeLayer(scene, 'taipei-mountains', .1, f => {
+    f(0xFFF4D8, 382, 68, 26, 26);
+    for (let x = 0, i = 0; x < layerEnd(.1); x += 80, i++) {
+      f(0x9DD8CB,x,176,80,56); f(0x9DD8CB,x+12,151-i%3*8,56,80); f(0x9DD8CB,x+26,139-i%3*8,28,90);
+      if (i%2===0) f(0xFFF4D8,x+12,72+i%3*10,48,7);
+    }
+    paintTaipei101(f,skylineX,224,.95);
+  });
+  bakeLayer(scene, 'taipei-streets', .35, c => {
+    for (let x = 0, i = 0; x < layerEnd(.35); x += 62, i++) {
+      const h=32+i*17%35; c(0x91B7BB,x,224-h,50,h); c(0x6D929E,x-2,221-h,54,4);
+      for(let y=230-h;y<217;y+=12) for(let dx=7;dx<46;dx+=14) c(0xFFF4D8,x+dx,y,5,6);
+      if(i%3===0) { c(0xA8B8C5,x+12,208-h,17,12); c(0x58788A,x+10,205-h,21,4); }
+    }
+    paintNorthGate(c,northX,224);
+    for(let i=0;i<7;i++) shophouse(c,shopsX+i*66,224,i);
+    // The riverside and railway align with their chapters, even on a longer map.
+    const riverWidth = riverEnd-riverStart;
+    c(0x76CCD9,riverStart,176,riverWidth,56); c(0xBDEFE7,riverStart,187,riverWidth,3); c(0xBDEFE7,riverStart,205,riverWidth,2);
+    for(let x=riverStart+10,i=0;x<riverEnd-20;x+=39,i++) c(0xFFF4D8,x,195+(i%2)*17,19,2);
+    c(0xCFBA97,riverStart,222,riverWidth,8); c(0x9B867A,riverStart,218,riverWidth,4);
+    const boat=riverStart+180;
+    c(0x9C644C,boat,199,46,5); c(0xFFF4D8,boat+21,177,3,22); c(0xFFF4D8,boat+24,181,14,14); c(0x253653,boat+16,202,32,3);
+    c(0x879DAA,trackStart,186,trackEnd-trackStart,7);
+    for(let x=trackStart+14;x<trackEnd;x+=70) c(0x879DAA,x,193,5,36);
+  });
+  const trainShape=scene.add.graphics(), t=painter(trainShape);
+  for(let i=0;i<3;i++) {
+    t(0xFFF4D8,i*43,0,41,18); t(0x5B8EAC,i*43,12,41,4);
+    for(let j=0;j<3;j++) t(0x466688,i*43+5+j*11,4,8,6);
+    t(0x253653,i*43+5,18,6,3); t(0x253653,i*43+29,18,6,3);
   }
-  paintTaipei101(f,585,224,.95);
-  bake(scene,far,'taipei-mountains',1000,.1);
-  const city=scene.add.graphics().setScrollFactor(.35).setName('taipei-streets');const c=painter(city);
-  for(let i=0;i<26;i++) {
-    const x=i*62,h=32+i*17%35;c(0x91B7BB,x,224-h,50,h);c(0x6D929E,x-2,221-h,54,4);
-    for(let y=230-h;y<217;y+=12)for(let dx=7;dx<46;dx+=14)c(0xFFF4D8,x+dx,y,5,6);
-    if(i%3===0){c(0xA8B8C5,x+12,208-h,17,12);c(0x58788A,x+10,205-h,21,4);}
-  }
-  paintNorthGate(c,140,224);
-  for(let i=0;i<4;i++) shophouse(c,360+i*66,224,i);
-  // Dadaocheng riverside interpretation: water, quay and a separate background path.
-  c(0x76CCD9,610,176,345,56);c(0xBDEFE7,610,187,345,3);c(0xBDEFE7,610,205,345,2);
-  for(let i=0;i<9;i++)c(0xFFF4D8,620+i*39,195+(i%2)*17,19,2);
-  c(0xCFBA97,610,222,345,8);c(0x9B867A,610,218,345,4);
-  c(0x9C644C,710,199,46,5);c(0xFFF4D8,731,177,3,22);c(0xFFF4D8,734,181,14,14);
-  c(0x253653,726,202,32,3);
-  // Transit is a generic Taipei-inspired train, not a specific line or station map.
-  c(0x879DAA,980,186,430,7);
-  for(let x=994;x<1400;x+=70)c(0x879DAA,x,193,5,36);
-  bake(scene,city,'taipei-streets',1650,.35);
-  const trainShape=scene.add.graphics();const t=painter(trainShape);
-  for(let i=0;i<3;i++){t(0xFFF4D8,i*43,0,41,18);t(0x5B8EAC,i*43,12,41,4);for(let j=0;j<3;j++)t(0x466688,i*43+5+j*11,4,8,6);t(0x253653,i*43+5,18,6,3);t(0x253653,i*43+29,18,6,3);}
   const train=bake(scene,trainShape,'taipei-transit',130,.35,24);
-  train.setPosition(995,164);scene.tweens.add({targets:train,x:1250,duration:11000,yoyo:true,repeat:-1});
-  const near=scene.add.graphics().setScrollFactor(.75).setName('taipei-street-life');const n=painter(near);
-  for(let i=0;i<23;i++){const x=i*128+18;n(0x253653,x,196,3,48);n(0xFFD45B,x-3,193,9,7);n(0x4FAE87,x+55,232,28,12);n(0x73D6AA,x+59,228,20,6);}
-  for(const x of [1050,1120]) {near.lineStyle(2,0x466688).strokeCircle(x,237,6).strokeCircle(x+19,237,6).lineBetween(x,237,x+10,224).lineBetween(x+10,224,x+19,237).lineBetween(x,237,x+19,237);n(0x466688,x+6,221,8,2);}
-  bake(scene,near,'taipei-street-life',3000,.75);
-  if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  train.setPosition(trackStart+15,164);
+  const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!reducedMotion) scene.tweens.add({targets:train,x:trackEnd-130,duration:16000,yoyo:true,repeat:-1});
+  bakeLayer(scene, 'taipei-street-life', .75, n => {
+    for(let x=18;x<layerEnd(.75);x+=128) {
+      n(0x253653,x,196,3,48); n(0xFFD45B,x-3,193,9,7); n(0x4FAE87,x+55,232,28,12); n(0x73D6AA,x+59,228,20,6);
+    }
+    for(const worldX of [river.fromX+600,river.fromX+1600,xinyi.fromX+750]) {
+      const x=anchor(worldX,.75);
+      n(0x835F51,x,225,34,4); n(0x253653,x+3,229,3,12); n(0x253653,x+28,229,3,12);
+    }
+  });
+  if (!reducedMotion) {
     for(let i=0;i<3;i++) {
-      const glint=scene.add.rectangle(650+i*95,199+(i%2)*12,24,2,0xFFF4D8,.4).setScrollFactor(.35);
+      const glint=scene.add.rectangle(riverStart+80+i*95,199+(i%2)*12,24,2,0xFFF4D8,.4).setScrollFactor(.35);
       scene.tweens.add({targets:glint,x:glint.x+12,alpha:.1,duration:1800+i*400,yoyo:true,repeat:-1});
     }
     const cloud=scene.add.rectangle(290,98,36,5,0xFFF4D8,.65).setScrollFactor(.08);
     scene.tweens.add({targets:cloud,x:325,duration:16000,yoyo:true,repeat:-1});
   }
-  for(const [x,y,text] of [[140,130,'北門 · 承恩門'],[460,119,'迪化街 · 茶行與騎樓'],[785,162,'大稻埕 · 淡水河岸']] as const) scene.add.text(x,y,text,{fontFamily:UI_FONT,fontSize:'10px',color:'#355167',backgroundColor:'#FFF4D8',padding:{x:3,y:2}}).setOrigin(.5).setScrollFactor(.35);
-  scene.add.text(585,78,'台北101 · 象山意象',{fontFamily:UI_FONT,fontSize:'11px',color:'#355167',backgroundColor:'#FFF4D8',padding:{x:3,y:2}}).setOrigin(.5).setScrollFactor(.1);
+  for(const [x,y,text] of [[northX,130,'北門 · 承恩門'],[shopsX+150,119,'迪化街 · 茶行與騎樓'],[(riverStart+riverEnd)/2,162,'大稻埕 · 淡水河岸']] as const) {
+    scene.add.text(x,y,text,{fontFamily:UI_FONT,fontSize:'10px',color:'#355167',backgroundColor:'#FFF4D8',padding:{x:3,y:2}}).setOrigin(.5).setScrollFactor(.35);
+  }
+  scene.add.text(skylineX,68,'台北101 · 象山意象',{fontFamily:UI_FONT,fontSize:'11px',color:'#355167',backgroundColor:'#FFF4D8',padding:{x:3,y:2}}).setOrigin(.5).setScrollFactor(.1);
 }
-
 export function drawTaipeiTitle(scene: Phaser.Scene): void {
   const g=scene.add.graphics();const r=painter(g);
   for(let i=0;i<8;i++){r(0x9DD8CB,i*70,161,70,66);r(0x9DD8CB,i*70+17,140-i%3*10,36,87);}

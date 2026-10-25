@@ -4,7 +4,7 @@
   "title": "被表格淹沒的街口",
   "settingNote": "北門、迪化街、大稻埕與信義地景為縮景拼接，非真實步行路線；支援光橋與過載廣場為虛構場景。",
   "world": {
-    "width": 2880,
+    "width": 8640,
     "height": 270,
     "viewportWidth": 480,
     "viewportHeight": 270,
@@ -19,30 +19,38 @@
       "id": "act1",
       "title": "北門街口",
       "fromX": 0,
-      "toX": 520
+      "toX": 1560,
+      "spawnX": 64,
+      "goalX": 1500
     },
     {
       "id": "act2",
       "title": "迪化街巷",
-      "fromX": 520,
-      "toX": 1130
+      "fromX": 1560,
+      "toX": 3390,
+      "spawnX": 1640,
+      "goalX": 3300
     },
     {
       "id": "act3",
       "title": "大稻埕河岸",
-      "fromX": 1130,
-      "toX": 1930
+      "fromX": 3390,
+      "toX": 5790,
+      "spawnX": 3430,
+      "goalX": 5760
     },
     {
       "id": "act4",
       "title": "信義遠景",
-      "fromX": 1930,
-      "toX": 2880
+      "fromX": 5790,
+      "toX": 8640,
+      "spawnX": 5840,
+      "goalX": 8500
     }
   ],
   "camera": {
-    "bossLockFromX": 2090,
-    "bossLockToX": 2570
+    "bossLockFromX": 7850,
+    "bossLockToX": 8330
   },
   "platforms": [
     {
@@ -53,24 +61,129 @@
       "height": 16
     },
     {
+      "id": "north-arcade",
+      "x": 650,
+      "y": 204,
+      "width": 120,
+      "height": 16
+    },
+    {
+      "id": "north-star",
+      "x": 1040,
+      "y": 190,
+      "width": 128,
+      "height": 16
+    },
+    {
+      "id": "north-square",
+      "x": 1290,
+      "y": 206,
+      "width": 112,
+      "height": 16
+    },
+    {
+      "id": "dihua-entry",
+      "x": 1810,
+      "y": 202,
+      "width": 120,
+      "height": 16
+    },
+    {
       "id": "p2",
-      "x": 780,
+      "x": 2170,
       "y": 186,
       "width": 128,
       "height": 16
     },
     {
+      "id": "dihua-tea",
+      "x": 2520,
+      "y": 204,
+      "width": 116,
+      "height": 16
+    },
+    {
+      "id": "dihua-courtyard",
+      "x": 2870,
+      "y": 194,
+      "width": 120,
+      "height": 16
+    },
+    {
+      "id": "dihua-exit",
+      "x": 3160,
+      "y": 208,
+      "width": 112,
+      "height": 16
+    },
+    {
       "id": "p3",
-      "x": 1270,
+      "x": 3580,
       "y": 200,
       "width": 108,
       "height": 16
     },
     {
+      "id": "river-path",
+      "x": 3890,
+      "y": 206,
+      "width": 112,
+      "height": 16
+    },
+    {
+      "id": "river-quay",
+      "x": 4220,
+      "y": 192,
+      "width": 128,
+      "height": 16
+    },
+    {
       "id": "p4",
-      "x": 1490,
+      "x": 4610,
       "y": 188,
       "width": 112,
+      "height": 16
+    },
+    {
+      "id": "river-exit",
+      "x": 5660,
+      "y": 206,
+      "width": 120,
+      "height": 16
+    },
+    {
+      "id": "xinyi-entry",
+      "x": 6040,
+      "y": 204,
+      "width": 120,
+      "height": 16
+    },
+    {
+      "id": "xinyi-garden",
+      "x": 6390,
+      "y": 190,
+      "width": 112,
+      "height": 16
+    },
+    {
+      "id": "xinyi-square",
+      "x": 6770,
+      "y": 202,
+      "width": 128,
+      "height": 16
+    },
+    {
+      "id": "xinyi-walk",
+      "x": 7170,
+      "y": 188,
+      "width": 120,
+      "height": 16
+    },
+    {
+      "id": "xinyi-rest",
+      "x": 7510,
+      "y": 206,
+      "width": 128,
       "height": 16
     }
   ],
@@ -78,19 +191,19 @@
     {
       "id": "star-1",
       "type": "star",
-      "x": 260,
+      "x": 1072,
       "y": 158
     },
     {
       "id": "star-2",
       "type": "star",
-      "x": 814,
+      "x": 2204,
       "y": 154
     },
     {
       "id": "star-3",
       "type": "star",
-      "x": 1560,
+      "x": 4640,
       "y": 150
     }
   ],
@@ -106,40 +219,130 @@
       ]
     },
     {
-      "id": "paper-2",
+      "id": "paper-north-2",
       "type": "paperSlime",
-      "x": 720,
+      "x": 900,
       "y": 220,
       "range": [
-        650,
-        805
+        860,
+        955
+      ]
+    },
+    {
+      "id": "paper-north-3",
+      "type": "paperSlime",
+      "x": 1390,
+      "y": 220,
+      "range": [
+        1350,
+        1450
+      ]
+    },
+    {
+      "id": "paper-2",
+      "type": "paperSlime",
+      "x": 1980,
+      "y": 220,
+      "range": [
+        1930,
+        2030
+      ]
+    },
+    {
+      "id": "paper-dihua",
+      "type": "paperSlime",
+      "x": 2360,
+      "y": 220,
+      "range": [
+        2320,
+        2400
+      ]
+    },
+    {
+      "id": "deadline-dihua",
+      "type": "deadlineBat",
+      "x": 3030,
+      "y": 130,
+      "range": [
+        2980,
+        3080
       ]
     },
     {
       "id": "deadline-1",
       "type": "deadlineBat",
-      "x": 1210,
+      "x": 3760,
       "y": 132,
       "range": [
-        1160,
-        1300
+        3700,
+        3820
       ]
     },
     {
       "id": "signal-1",
       "type": "signalGhost",
-      "x": 1420,
+      "x": 4420,
       "y": 184,
       "range": [
-        1380,
-        1540
+        4380,
+        4480
+      ]
+    },
+    {
+      "id": "signal-river",
+      "type": "signalGhost",
+      "x": 4900,
+      "y": 184,
+      "range": [
+        4860,
+        4950
       ]
     },
     {
       "id": "fog-1",
       "type": "stigmaFog",
-      "x": 1770,
+      "x": 5260,
       "y": 184
+    },
+    {
+      "id": "paper-xinyi",
+      "type": "paperSlime",
+      "x": 6210,
+      "y": 220,
+      "range": [
+        6170,
+        6270
+      ]
+    },
+    {
+      "id": "deadline-xinyi",
+      "type": "deadlineBat",
+      "x": 6570,
+      "y": 130,
+      "range": [
+        6510,
+        6620
+      ]
+    },
+    {
+      "id": "paper-xinyi-2",
+      "type": "paperSlime",
+      "x": 6960,
+      "y": 220,
+      "range": [
+        6900,
+        7020
+      ]
+    },
+    {
+      "id": "deadline-xinyi-2",
+      "type": "deadlineBat",
+      "x": 7350,
+      "y": 130,
+      "range": [
+        7290,
+        7400
+      ]
     }
   ],
   "npcs": [
@@ -151,48 +354,98 @@
     },
     {
       "id": "ms-lin",
-      "x": 924,
+      "x": 2700,
       "y": 214,
       "dialogueId": "need"
     },
     {
       "id": "coord",
-      "x": 1648,
+      "x": 5060,
       "y": 214,
       "dialogueId": "relay"
     },
     {
       "id": "mentor",
-      "x": 1860,
+      "x": 5540,
       "y": 214,
       "dialogueId": "mentor"
     }
   ],
   "checkpoints": [
     {
-      "id": "cp1",
-      "x": 1030,
+      "id": "cp-1",
+      "x": 570,
       "y": 212
     },
     {
-      "id": "cp2",
-      "x": 1980,
+      "id": "cp-2",
+      "x": 1190,
+      "y": 212
+    },
+    {
+      "id": "cp-3",
+      "x": 1700,
+      "y": 212
+    },
+    {
+      "id": "cp-4",
+      "x": 2620,
+      "y": 212
+    },
+    {
+      "id": "cp-5",
+      "x": 3250,
+      "y": 212
+    },
+    {
+      "id": "cp-6",
+      "x": 3470,
+      "y": 212
+    },
+    {
+      "id": "cp-7",
+      "x": 4100,
+      "y": 212
+    },
+    {
+      "id": "cp-8",
+      "x": 4740,
+      "y": 212
+    },
+    {
+      "id": "cp-9",
+      "x": 5380,
+      "y": 212
+    },
+    {
+      "id": "cp-10",
+      "x": 5880,
+      "y": 212
+    },
+    {
+      "id": "cp-11",
+      "x": 6700,
+      "y": 212
+    },
+    {
+      "id": "cp-12",
+      "x": 7740,
       "y": 212
     }
   ],
   "bridgeGate": {
     "id": "bridge-gate",
-    "x": 1750,
+    "x": 5240,
     "y": 205,
     "width": 72,
     "height": 8
   },
   "boss": {
     "id": "overload",
-    "x": 2430,
+    "x": 8190,
     "y": 208,
-    "arenaStartX": 2090,
-    "arenaEndX": 2570,
+    "arenaStartX": 7850,
+    "arenaEndX": 8330,
     "phases": {
       "paper": {
         "requiredStamps": 2,
@@ -200,11 +453,11 @@
         "projectileWaveCount": 3,
         "stamps": [
           {
-            "x": 2240,
+            "x": 8000,
             "y": 232
           },
           {
-            "x": 2490,
+            "x": 8250,
             "y": 232
           }
         ],
@@ -214,12 +467,12 @@
         "switches": [
           {
             "id": "left",
-            "x": 2208,
+            "x": 7968,
             "y": 213
           },
           {
             "id": "right",
-            "x": 2520,
+            "x": 8280,
             "y": 213
           }
         ],
@@ -231,14 +484,14 @@
         "coreHitsRequired": 3,
         "exposeIntervalMs": 2000,
         "exposeWindowMs": 900,
-        "x": 2350,
+        "x": 8110,
         "y": 170
       }
     },
     "entryDurationMs": 1800
   },
   "exit": {
-    "x": 2740,
+    "x": 8500,
     "y": 222
   },
   "accessibilityNote": "MVP 不使用無法恢復的陷阱與深坑，所有職類均可通關"

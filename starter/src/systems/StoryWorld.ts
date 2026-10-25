@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 import level from '../../../data/level01.json';
 import { UI_FONT } from '../game/roles';
 import { conversations, encounters, readyForBoss, type DialogueId } from './Encounters';
-import type { RunState } from './RunState';
+import { activateCheckpoint, type RunState } from './RunState';
 import { stageById } from './Journey';
 
 export class StoryWorld {
@@ -85,8 +85,8 @@ export class StoryWorld {
     if (this.nearest) this.prompt.setPosition(this.nearest.x, this.nearest.y - 49).setText('[E / Enter] 交談');
     else if (this.atEntrance) this.prompt.setPosition(level.boss.arenaStartX - 65, 163).setText(readyForBoss(this.run) ? '[E / Enter] 進入廣場\n休息整備 · EN 補滿' : '← 回頭找林小姐完成需求事件');
     for (const checkpoint of level.checkpoints) {
-      if (this.run.checkpointX < checkpoint.x && Phaser.Math.Distance.Between(this.player.x, this.player.y, checkpoint.x, checkpoint.y) <= 35) {
-        this.run.checkpointX = checkpoint.x; this.refresh(); this.say('休息站已點亮 · 重生保留星星、事件與光橋');
+      if (Phaser.Math.Distance.Between(this.player.x, this.player.y, checkpoint.x, checkpoint.y) <= 35 && activateCheckpoint(this.run, checkpoint.x)) {
+        this.refresh(); this.say('休息站已點亮 · EN 補滿，重生保留冒險進度');
       }
     }
   }

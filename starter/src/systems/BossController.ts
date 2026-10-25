@@ -83,7 +83,7 @@ export class BossController {
     if (stage === 'light') this.core.enableBody(false, 0, 0, true, true); else this.core.disableBody(true, true);
     this.sprite.setTexture(stage === 'paper' ? 'boss-threat' : 'boss-disrupted');
     if (stage === 'bridge') {
-      const bat = this.hazards.create(2310, 160, 'deadline-bat') as Phaser.Physics.Arcade.Image;
+      const bat = this.hazards.create(this.definition.boss.arenaStartX + 220, 160, 'deadline-bat') as Phaser.Physics.Arcade.Image;
       bat.setData('bat', true).setSize(20, 16).setDepth(17);
     }
     audioBus.play('support');
@@ -125,7 +125,7 @@ export class BossController {
       this.warning.setVisible(true).setText(exposed ? '核心亮起！按住跳躍，落下時接通光球' : '等待核心亮起 · 下一次仍有機會');
     }
     for (const item of [...this.hazards.getChildren()] as Phaser.Physics.Arcade.Image[]) {
-      if (item.getData('bat')) item.setVelocity((2330 + Math.sin(age / 700) * 115 - item.x) * 8, (148 + Math.sin(age / 450) * 24 - item.y) * 8);
+      if (item.getData('bat')) item.setVelocity(((level.boss.arenaStartX + level.boss.arenaEndX) / 2 + Math.sin(age / 700) * 115 - item.x) * 8, (148 + Math.sin(age / 450) * 24 - item.y) * 8);
       else if (item.x < level.boss.arenaStartX || now - item.getData('born') > 4500) item.destroy();
       else item.setVelocityX(item.getData('speed') * (stage === 'bridge' ? 1 - 0.3 * this.switchIds.size : 1));
     }

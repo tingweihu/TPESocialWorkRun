@@ -20,10 +20,11 @@ test('configured windows have exact opening/closing boundaries', () => {
 test('editing JSON settings changes actual Boss objects, waves, progression and camera', () => {
   const definition = structuredClone(level);
   Object.assign(definition.boss.phases.paper, { requiredStamps: 1, telegraphMs: 200, waveIntervalMs: 3200, projectileWaveCount: 5 });
-  definition.boss.phases.paper.stamps = [{ x: 2222, y: 231 }, { x: 2444, y: 230 }];
-  definition.boss.phases.bridge.switches.push({ id: 'middle', x: 2350, y: 213 });
-  Object.assign(definition.boss.phases.light, { x: 2345, y: 160, coreHitsRequired: 2, exposeIntervalMs: 3100, exposeWindowMs: 700 });
-  definition.camera.bossLockFromX = 2080;
+  const arena = definition.boss.arenaStartX;
+  definition.boss.phases.paper.stamps = [{ x: arena + 132, y: 231 }, { x: arena + 354, y: 230 }];
+  definition.boss.phases.bridge.switches.push({ id: 'middle', x: arena + 260, y: 213 });
+  Object.assign(definition.boss.phases.light, { x: arena + 255, y: 160, coreHitsRequired: 2, exposeIntervalMs: 3100, exposeWindowMs: 700 });
+  definition.camera.bossLockFromX = arena - 10;
   const { scene, images, overlaps, groups, camera } = bossScene();
   const player = entity(); const run = createRun();
   Object.assign(run, { status: 'playing', mode: 'practice', practiceStage: 'boss', bridgeActive: true, encounters: { need: true, relay: true } });
@@ -31,14 +32,19 @@ test('editing JSON settings changes actual Boss objects, waves, progression and 
   const boss = new BossController(scene, run, player, () => {}, () => clears++, definition);
   const stamps = images.filter(i => i.key === 'work-stamp');
   const core = images.find(i => i.key === 'support-core');
-  assert.deepEqual(stamps.map(s => [s.x, s.y]), [[2222, 231], [2444, 230]]);
-  assert.deepEqual([core.x, core.y], [2345, 160]);
+  assert.deepEqual(stamps.map(s => [s.x, s.y]), [[arena + 132, 231], [arena + 354, 230]]);
+  assert.deepEqual([core.x, core.y], [arena + 255, 160]);
   assert.equal(boss.begin(), true);
-  assert.deepEqual(camera.bounds, [2080, 0, 490, 270]);
+  assert.deepEqual(camera.bounds, [arena - 10, 0, 490, 270]);
   run.elapsedMs = definition.boss.entryDurationMs + 199; boss.update(); assert.equal(groups[0].items.length, 0);
   run.elapsedMs++; boss.update(); assert.equal(groups[0].items.length, 5);
   boss.update(); assert.equal(groups[0].items.length, 5, 'one wave per interval');
   player.body.velocity.y = 20; overlaps.get(stamps[0])(); assert.equal(run.bossStage, 'bridge');
+  boss.update();
+  const bat = groups[0].items.find(item => item.getData('bat'));
+  assert.ok(bat.x > arena && bat.x < definition.boss.arenaEndX, 'bat spawns inside the relocated arena');
+  const batTarget = bat.x + bat.body.velocity.x / 8;
+  assert.ok(batTarget > arena && batTarget < definition.boss.arenaEndX, 'bat patrol follows the arena, not its old world position');
   for (const control of definition.boss.phases.bridge.switches.slice(0, 2)) { player.setPosition(control.x, control.y); boss.interact(); }
   assert.equal(run.bossStage, 'bridge', 'all configured switches are required');
   const last = definition.boss.phases.bridge.switches.at(-1); player.setPosition(last.x, last.y); boss.interact();
@@ -50,7 +56,7 @@ test('editing JSON settings changes actual Boss objects, waves, progression and 
   run.elapsedMs = phaseStart + 3100; hit();
   assert.equal(run.bossStage, 'cleared'); assert.equal(run.bossProgress, 2); assert.equal(clears, 1);
   hit(); assert.equal(clears, 1);
-  assert.deepEqual(camera.bounds, [1930, 0, 950, 270], 'practice camera returns to its own section');
+  assert.deepEqual(camera.bounds, [5790, 0, 2850, 270], 'practice camera returns to its own section');
 });
 test('shipped Boss data has valid targets and timings', () => {
   const { paper, bridge, light } = level.boss.phases;

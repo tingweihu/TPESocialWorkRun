@@ -1,11 +1,16 @@
 import level from '../../../data/level01.json';
 
-export const STAGES = [
-  { id: 'beimen', number: '01', title: '北門・暖身街口', subtitle: '把第一步，交給一點點勇氣。', description: '跟阿光打聲招呼，試著跳過紙山。走到街口另一端，就完成這段散步。', objective: '向右抵達街口終點', from: 0, to: 520, spawn: 64, goal: 500 },
-  { id: 'dihua', number: '02', title: '迪化街・好好聽你說', subtitle: '騎樓下，留一個慢慢說話的位置。', description: '找到林小姐，先聽懂她最急迫的需要。選錯也沒關係，聊一聊，再一起想辦法。', objective: '完成需求對話，再走到休息站右側', from: 520, to: 1130, spawn: 600, goal: 1100 },
-  { id: 'river', number: '03', title: '大稻埕・把光接起來', subtitle: '河風吹過來，夥伴也正在路上。', description: '跟小連確認資訊，讓支援光橋亮起。沒有星星也能過橋，往右找到下一個休息站。', objective: '與小連接通光橋，走到河岸盡頭', from: 1130, to: 2030, spawn: 1170, goal: 2000 },
-  { id: 'boss', number: '04', title: '信義・一起分擔', subtitle: '高樓很高，但你不用一個人撐住。', description: '進入過載廣場，依序完成分配章、兩側開關與光球。每次失敗都能從廣場前重來。', objective: '解除過載巨獸，走向亮起的出口', from: 1930, to: 2880, spawn: 1980, goal: 2740 },
+const CHAPTERS = [
+  { id: 'beimen', number: '01', title: '北門・暖身街口', subtitle: '把第一步，交給一點點勇氣。', description: '跟阿光打聲招呼，沿著街口、騎樓與小廣場練習跳躍。路上的休息站會補滿體力，慢慢走到街口另一端吧。', objective: '向右抵達街口終點' },
+  { id: 'dihua', number: '02', title: '迪化街・好好聽你說', subtitle: '騎樓下，留一個慢慢說話的位置。', description: '穿過茶行騎樓與小院，找到林小姐，先聽懂她最急迫的需要。選錯也沒關係，聊一聊，再一起往下一站出發。', objective: '完成需求對話，再走到街巷盡頭' },
+  { id: 'river', number: '03', title: '大稻埕・把光接起來', subtitle: '河風吹過來，夥伴也正在路上。', description: '沿著河岸步道與碼頭平台，跟小連確認資訊，讓支援光橋亮起。沒有星星也能過橋，累了就在休息站歇歇。', objective: '與小連接通光橋，走到河岸盡頭' },
+  { id: 'boss', number: '04', title: '信義・一起分擔', subtitle: '高樓很高，但你不用一個人撐住。', description: '走過城市綠帶與廣場，在最後的休息站整備。進入過載廣場後，依序完成分配章、兩側開關與光球；失敗可從廣場前重來。', objective: '解除過載巨獸，走向亮起的出口' },
 ] as const;
+// Selection, physics and chapter scenery share the same map boundaries.
+export const STAGES = CHAPTERS.map((chapter, index) => {
+  const act = level.acts[index];
+  return { ...chapter, from: act.fromX, to: act.toX, spawn: act.spawnX, goal: act.goalX };
+});
 export type StageId = typeof STAGES[number]['id'];
 export type JourneyLaunch = { mode?: 'story' | 'practice'; stage?: StageId };
 export const stageById = (id: unknown) => STAGES.find(stage => stage.id === id);
